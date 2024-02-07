@@ -12,19 +12,9 @@ public class Main extends Application{
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("TetrisView.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("StartingScreenView.fxml"));
 			Parent root = loader.load();
-			TetrisController controller = loader.getController();
 			Scene scene = new Scene(root);
-			scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-				@Override
-				public void handle(KeyEvent event) {
-					controller.onKeyPressed(event);
-//					System.out.println(event.getCode());
-				}
-				
-			});
 			
 			primaryStage.setTitle("Don't Be Blocked");
 			primaryStage.setScene(scene);
@@ -35,7 +25,6 @@ public class Main extends Application{
 	}
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		launch(args);
 	}
 }
