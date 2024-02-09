@@ -2,13 +2,18 @@ package main;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
 import java.util.Random;
 
 public class TetrisController {
@@ -17,6 +22,7 @@ public class TetrisController {
     private Thread gameThread;
     private int movementsTetris;
     private boolean gameEnded;
+    private boolean gamePaused;
 	
     @FXML
     Pane tetrisPane;
@@ -36,6 +42,12 @@ public class TetrisController {
     @FXML
 	Button restartButton;
     
+    @FXML
+	Button pauseButton;
+    
+    @FXML
+	Button menuButton;
+    
     
     public void initialize() {
         // Initialize the TetrisModel
@@ -44,30 +56,61 @@ public class TetrisController {
 		
 		gameRunning = true;
 		gameEnded = false;
+		gamePaused = false;
 		// Start a separate thread for continuous block movement
         gameThread = new Thread(this::runGame);
         gameThread.setDaemon(true); // Set as a daemon thread to stop when the application closes
         gameThread.start();
     }
     
+    public void handlePauseButton() {
+    	if (!gameRunning == gamePaused) {
+    		//change state of game
+        	gamePaused = !gamePaused;
+        	gameRunning = !gameRunning;
+        	
+        	if (gamePaused) {
+        		pauseButton.setText("Unpause");
+        	} else {
+        		pauseButton.setText("Pause");
+        	}
+    	}
+    }
+    
     public void handleRestartButton() {
     	if (gameThread != null && gameThread.isAlive()) {
     		gameRunning = false;
+//    		gameEnded = false;
 //    		gameThread.interrupt();
     		
     		tetrisModel = new TetrisModel();
 //    		initialize();
     		gameRunning = true;
+    		
     		// Start a separate thread for continuous block movement
-            //gameThread = new Thread(this::runGame);
-    		//gameThread.setDaemon(true); // Set as a daemon thread to stop when the application closes
-    		//gameThread.start();
+//          gameThread = new Thread(this::runGame);
+//    		gameThread.setDaemon(true); // Set as a daemon thread to stop when the application closes
+//    		gameThread.start();
     	} //else if (gameEnded == true) {
     		
     	//}
     	
     }
 	
+    public void openStartingScreenPanel() {
+    	try {
+    		AnchorPane root = FXMLLoader.load(getClass().getResource("StartingScreenView.fxml"));
+    		Scene scene = new Scene(root);
+    		
+    		//access primary Stage through button 
+			Stage primaryStage = (Stage) menuButton.getScene().getWindow();
+			
+			primaryStage.setScene(scene);
+    	} catch(Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
     //create cells as rectangles
     public void createCells(int number) {
     	int cellSize = 20;
@@ -120,7 +163,7 @@ public class TetrisController {
             // Handle other key presses if needed
             default:
             	break;
-        }
+    		}
     	}
     	
         // Update the game board and UI based on the movement
@@ -132,7 +175,7 @@ public class TetrisController {
 
     		//set gameover text invisible if game running
         	//set gameover text visible if game not running
-    		gameOverTxt.setVisible(!gameRunning);
+    		gameOverTxt.setVisible(!gameRunning && !gamePaused);
     		
     		//run the game if not gameover
         	if (gameRunning) {
