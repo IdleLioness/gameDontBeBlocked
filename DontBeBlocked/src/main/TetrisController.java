@@ -251,7 +251,6 @@ public class TetrisController {
 	
 	// Method to update the game view/UI based on the TetrisModel
     private void updateGameViewConsole() {
-        // TODO: Update the game view/UI components based on the TetrisModel
     	tetrisModel.visualise();
     }
     
